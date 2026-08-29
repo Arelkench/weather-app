@@ -1,0 +1,24 @@
+{
+  "name": "weather-app-frontend",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "5.17.19",
+    "@tanstack/react-query-devtools": "5.17.19",
+    "graphql": "16.8.1",
+    "graphql-request": "6.1.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "18.2.55",
+    "@types/react-dom": "18.2.19",
+    "@vitejs/plugin-react": "4.2.1",
+    "typescript": "5.3.3",
+    "vite": "5.0.12"
+  }
+}
