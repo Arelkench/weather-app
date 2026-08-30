@@ -36,6 +36,22 @@ const styles = {
   },
 };
 
+function friendlyError(error: Error): { heading: string; detail: string } {
+  const msg = error.message ?? '';
+  const jsonStart = msg.indexOf(': {"');
+  try {
+    if (jsonStart !== -1) {
+      const gqlMsg: string | undefined = JSON.parse(msg.slice(jsonStart + 2))?.response?.errors?.[0]?.message;
+      if (gqlMsg) {
+        if (/location not found/i.test(gqlMsg)) return { heading: 'Location not found', detail: 'Check the spelling or try a different city.' };
+        return { heading: 'Something went wrong', detail: gqlMsg };
+      }
+    }
+  } catch { /* fall through */ }
+  if (/location not found/i.test(msg)) return { heading: 'Location not found', detail: 'Check the spelling or try a different city.' };
+  return { heading: 'Something went wrong', detail: 'Try again in a moment.' };
+}
+
 export function ForecastContent({ location, isLoading, error, data, selectedDay, selectedActivity, unit, onSelectDay, onSelectActivity }: Props) {
   const forecast = data?.forecast;
   const day = forecast?.days[selectedDay];
@@ -57,13 +73,16 @@ export function ForecastContent({ location, isLoading, error, data, selectedDay,
         </div>
       )}
 
-      {error && !isLoading && (
-        <div role="alert" style={styles.centered}>
-          <p style={styles.bigIcon} aria-hidden="true">🔍</p>
-          <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>Location not found</p>
-          <p style={{ fontSize: 14 }}>{error.message ?? 'Try a different city name.'}</p>
-        </div>
-      )}
+      {error && !isLoading && (() => {
+        const { heading, detail } = friendlyError(error);
+        return (
+          <div role="alert" style={styles.centered}>
+            <p style={styles.bigIcon} aria-hidden="true">🔍</p>
+            <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>{heading}</p>
+            <p style={{ fontSize: 14 }}>{detail}</p>
+          </div>
+        );
+      })()}
 
       {forecast && day && (
         <>
