@@ -28,50 +28,78 @@ Search any city → get 7 days of activity scores (0–100) powered by real fore
 
 TanStack Query caches results by location string — switching between recently searched cities is instant (5-minute stale time). Recent searches surface in the search dropdown from the query cache itself, no extra state needed.
 
-## Scoring assumptions
+## Evidence vs assumptions
 
-All scores are 0–100. I worked out the factor weights and thresholds by talking through what actually matters for each activity with Claude, then sanity-checking the outputs against known good/bad days.
+The scoring models are evidence-informed rather than presented as universal scientific truth. The outdoor sightseeing model is based on the structure and weighting of the Holiday Climate Index for Urban Tourism (HCI:Urban). The indoor sightseeing model is intentionally a project-specific interpretation: it estimates motivation to choose indoor activities from outdoor weather inconvenience.
 
-### Surfing
-Factors (weighted average over daylight hours):
+Where published research does not directly define a threshold applicable to Open-Meteo's hourly data, we make an explicit implementation assumption rather than implying scientific validation. The scoring is intended to produce an understandable, comparable 0–100 suitability score, not to claim that a particular weather condition objectively makes an activity good or bad.
 
-| Factor | Weight | Reasoning |
+All assumptions are documented with comments inside the relevant scoring file (`backend/src/scoring/`).
+
+## Scoring methodology
+
+All scores are 0–100. Each scorer returns a daily score, rating, one-line description, best 4-hour window, hourly scores, and factor breakdown. Daily scores are averaged over the activity's realistic operating window — not all 24 hours.
+
+### Surfing (06:00–12:00)
+
+Evidence-informed adaptation of the Global Surf Index (Reguero et al., 2015) and Hutt et al. (2001) skill-level wave-height ranges.
+
+| Factor | Weight | Source |
 |---|---|---|
-| Wave height | 30% | Sweet spot 0.8–2.5 m; <0.3 m = flat, >4 m = dangerous |
-| Wave period | 25% | Longer period = cleaner, more powerful waves; >15 s = 100 |
-| Wind speed | 25% | <10 km/h = perfect; offshore/onshore direction not available from Open-Meteo free tier, so wind speed only |
-| Precipitation | 10% | Rain affects comfort and visibility, not wave quality |
-| Air temperature | 10% | Comfort/wetsuit choice proxy |
+| Wave height | 35% | Hutt et al. (2001) — appropriate range varies by surfer skill |
+| Wind speed | 35% | Global Surf Index; Surfline methodology |
+| Wave period | 20% | Surfline wave-energy research |
+| Air temperature | 5% | Project assumption — small comfort modifier only |
+| Precipitation | 5% | Project assumption — rain ≠ bad surf |
 
-Fallback: if the marine API returns no wave data (inland location), surfing score = 0 with an explanatory description.
+Fallback: no marine data (inland location) → score 0 with explanation.
 
-### Skiing
-| Factor | Weight | Reasoning |
+### Skiing (10:00–15:00)
+
+Based on the Skiing Utility Index (SUI) from Kapetanakis et al. (2022), which surveyed 111 skiers at a Greek ski resort and fitted empirical utility curves for each variable.
+
+| Factor | Weight | Source |
 |---|---|---|
-| Fresh snowfall | 35% | Hourly snowfall in cm; 0 = 20 (base layer assumed), >3 cm/h = 100 |
-| Temperature | 25% | –5 to –10 °C is the sweet spot; above 0 °C = wet/icy (15 pts); below –20 °C = uncomfortably cold |
-| Wind | 20% | >60 km/h = lift-closing conditions |
-| Visibility | 20% | <1000 m = whiteout/dangerous |
+| Snowfall duration | 30.3% | Kapetanakis et al. (2022) — 3rd-degree polynomial |
+| Wind | 27.9% | Kapetanakis et al. (2022) |
+| Temperature | 22.2% | Kapetanakis et al. (2022) — GEV distribution |
+| Cloud cover | 19.4% | Kapetanakis et al. (2022) |
 
-### Outdoor sightseeing
-| Factor | Weight | Reasoning |
+Guard: if peak ski-window temperature > 3 °C and no snowfall at all, skiing is physically implausible (no snow-covered slopes) → score 0.
+
+### Outdoor sightseeing (09:00–19:00)
+
+Follows the structure and component weights of the Holiday Climate Index for Urban Tourism (HCI:Urban, Dubois et al.).
+
+| Factor | Weight | Source |
 |---|---|---|
-| Temperature | 30% | Bell curve peaking at 18–25 °C; <0 °C or >35 °C = near-zero |
-| Precipitation | 30% | Any rain drops the score sharply; heavy rain = near-zero |
-| Cloud cover | 20% | 20–45% (partly cloudy) = ideal; fully overcast = 15 |
-| Wind | 20% | <10 km/h = perfect; walking in gale-force wind is unpleasant |
+| Thermal comfort | 40% | HCI:Urban weight — largest single tourist-comfort factor |
+| Precipitation | 30% | HCI:Urban weight |
+| Sun / Clouds | 20% | HCI:Urban aesthetics component |
+| Wind | 10% | HCI:Urban weight |
 
-### Indoor sightseeing
-Scores "motivation to be indoors" — bad outdoor conditions push you inside, but a beautiful day can still be 30 (museums exist). Floored at 30, capped at 85.
+Project approximation: `apparent_temperature` (Open-Meteo) is used as a proxy for HCI's thermal comfort component (which uses Physiological Equivalent Temperature). Exact °C thresholds are adapted to apparent temperature rather than the published HCI rating tables.
 
-| Factor | Weight | Reasoning |
+### Indoor sightseeing (09:00–19:00)
+
+No universal indoor-tourism index exists in the literature. This model is a project-derived measure of motivation to choose indoor activities based on outdoor weather inconvenience.
+
+| Factor | Weight | Rationale |
 |---|---|---|
-| Precipitation | 40% | Rain is the strongest indoor motivator |
-| Temperature extreme | 30% | <5 °C or >30 °C makes outside uncomfortable |
-| Wind | 15% | High wind adds motivation |
-| Cloud cover | 15% | Overcast adds marginal motivation |
+| Rain impact | 45% | Project assumption — rain is the primary driver of indoor motivation |
+| Thermal discomfort | 25% | Project assumption — cold and extreme heat both motivate shelter |
+| Wind impact | 20% | Project assumption — strong wind reduces outdoor appeal |
+| Cloud cover | 10% | Project assumption — weakest driver; overcast ≠ compels going inside |
 
-**Best time** for each activity is the 4-hour window with the highest average hourly score, searched within activity-appropriate hours (e.g. surfing: 05:00–18:00, skiing: 08:00–17:00).
+Floor: daily score is floored at 30 because museums and galleries are worthwhile regardless of weather. The floor is applied to each hourly total, not to individual breakdown components.
+
+### Running tests
+
+```bash
+cd backend && npm test
+```
+
+39 boundary tests covering component functions and the evaluation-window constraint for both sightseeing models.
 
 ## Things I'd do with more time
 
@@ -79,4 +107,3 @@ Scores "motivation to be indoors" — bad outdoor conditions push you inside, bu
 - Snow depth / base layer data for skiing (Open-Meteo has it in the climate API)
 - Location disambiguation — geocoding currently takes the first result; a dropdown to pick between multiple matches would help
 - Error boundary + retry UI
-- Unit tests for the scoring functions (they're pure functions, easy to test)
