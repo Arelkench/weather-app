@@ -76,7 +76,7 @@ export function ActivityCard({ activity, isSelected, onSelect }: Props) {
         </div>
       )}
 
-      <div>
+      {activity.breakdown.length > 0 && <div>
         <p style={{ ...styles.sectionLabel, marginBottom: 8 }}>Breakdown</p>
         <div style={styles.breakdownList}>
           {activity.breakdown.map((f) => (
@@ -96,7 +96,7 @@ export function ActivityCard({ activity, isSelected, onSelect }: Props) {
             </div>
           ))}
         </div>
-      </div>
+      </div>}
     </button>
   );
 }
