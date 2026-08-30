@@ -245,6 +245,30 @@ function skiingRating(score: number): string {
  */
 export function scoreSkiing(slice: HourlySlice): ScorerOutput {
   /*
+   * The SUI model assumes you are already at a ski resort with a packed
+   * base layer. It was not designed to answer "can you ski here at all?"
+   *
+   * Guard: if the peak temperature during the skiing period is above 3°C
+   * AND there is no snowfall in the entire day, skiing is physically
+   * implausible (no snow-covered slopes). Return 0 with an explanation
+   * rather than applying the research model, which would give a tropical
+   * beach a high snowfall score (0 fresh-snow hours = 98 by the polynomial).
+   */
+  const peakSkiTemp = Math.max(...slice.temperature.slice(SKI_START_HOUR, SKI_END_HOUR));
+  const anySnow = slice.snowfall.some((cm) => cm > 0);
+
+  if (peakSkiTemp > 3 && !anySnow) {
+    return {
+      score: 0,
+      rating: 'Extremely unfavorable',
+      description: 'Temperatures are too warm and there is no snowfall — skiing is not viable here.',
+      bestTime: 'N/A',
+      breakdown: [],
+      hourly: Array.from({ length: 24 }, (_, h) => ({ hour: h, score: 0 })),
+    };
+  }
+
+  /*
    * The original research found that most respondents ski between
    * 10:00 and 15:00.
    *
