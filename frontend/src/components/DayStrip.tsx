@@ -45,7 +45,7 @@ export function DayStrip({ days, selectedDay, selectedActivity, unit, onSelectDa
               borderRadius: 'var(--radius)',
               background: isSelected ? 'var(--bg-secondary)' : 'var(--bg-card)',
               cursor: 'pointer',
-              minWidth: 96,
+              width: 108,
               transition: 'border-color 0.15s, background 0.15s',
               flexShrink: 0,
             }}
@@ -54,7 +54,7 @@ export function DayStrip({ days, selectedDay, selectedActivity, unit, onSelectDa
             <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{date}</span>
             <ScoreCircle score={score} size={64} strokeWidth={5} />
             <span style={{ fontSize: 22, lineHeight: 1 }} aria-hidden="true">{wmoIcon(day.weatherCode)}</span>
-            <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+            <span style={{ fontSize: 12, color: 'var(--text-secondary)', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
               {displayTemp(day.tempMax, unit)} / {displayTemp(day.tempMin, unit)}
             </span>
           </button>

@@ -284,7 +284,7 @@ export default function App() {
                     <ActivityCard
                       key={activity.activity}
                       activity={activity}
-                      isSelected={activity.activity === selectedActivity && detailOpen}
+                      isSelected={activity.activity === selectedActivity}
                       onSelect={handleActivitySelect}
                     />
                   ))}
