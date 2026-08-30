@@ -21,6 +21,7 @@ export function ScoreCircle({ score, size = 80, strokeWidth = 6, showLabel = tru
       viewBox={`0 0 ${size} ${size}`}
       aria-hidden="true"
       focusable="false"
+      style={{ flexShrink: 0 }}
     >
       {/* track */}
       <circle
