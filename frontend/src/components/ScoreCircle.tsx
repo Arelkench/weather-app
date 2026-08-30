@@ -29,6 +29,7 @@ export function ScoreCircle({ score, size = 80, strokeWidth = 6, showLabel = tru
         stroke="var(--border)"
         strokeWidth={strokeWidth}
       />
+
       {/* progress */}
       <circle
         cx={cx} cy={cx} r={radius}
@@ -40,6 +41,7 @@ export function ScoreCircle({ score, size = 80, strokeWidth = 6, showLabel = tru
         transform={`rotate(-90 ${cx} ${cx})`}
         style={{ transition: 'stroke-dasharray 0.5s ease' }}
       />
+
       {showLabel && (
         <text
           x="50%" y="50%"

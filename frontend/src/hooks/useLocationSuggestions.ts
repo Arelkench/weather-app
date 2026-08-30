@@ -12,11 +12,19 @@ export function useLocationSuggestions(query: string) {
       const res = await fetch(
         `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=6&language=en&format=json`
       );
-      if (!res.ok) return [];
+
+      if (!res.ok) {
+        return [];
+      }
+
       const data = (await res.json()) as {
         results?: Array<{ name: string; country: string; admin1?: string; country_code?: string }>;
       };
-      if (!data.results) return [];
+
+      if (!data.results) {
+        return [];
+      }
+
       return data.results.map((r) => ({
         display: [r.name, r.admin1, r.country].filter(Boolean).join(', '),
         searchValue: [r.name, r.country].filter(Boolean).join(', '),

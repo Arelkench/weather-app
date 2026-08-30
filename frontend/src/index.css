@@ -18,7 +18,7 @@
   color-scheme: light dark;
 }
 
-:root[data-theme="dark"],
+/* System dark preference */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0F172A;
@@ -35,6 +35,7 @@
   }
 }
 
+/* Explicit dark theme override */
 :root[data-theme="dark"] {
   --bg: #0F172A;
   --bg-secondary: #1E293B;
@@ -55,16 +56,9 @@ body {
   min-height: 100vh;
 }
 
-button {
-  font-family: inherit;
-  cursor: pointer;
-}
+button { font-family: inherit; cursor: pointer; }
+input  { font-family: inherit; }
 
-input {
-  font-family: inherit;
-}
-
-/* Focus ring — applied globally for accessibility */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;

@@ -22,6 +22,7 @@ export function activityColor(activity: string): string {
     outdoor: '#10B981',
     indoor: '#F59E0B',
   };
+
   return map[activity] ?? '#6B7280';
 }
 
@@ -32,6 +33,7 @@ export function activityIcon(activity: string): string {
     outdoor: '🔭',
     indoor: '🏛️',
   };
+
   return map[activity] ?? '🌤';
 }
 
@@ -42,6 +44,7 @@ export function activityLabel(activity: string): string {
     outdoor: 'Outdoor sightseeing',
     indoor: 'Indoor sightseeing',
   };
+
   return map[activity] ?? activity;
 }
 
@@ -59,7 +62,11 @@ export function wmoIcon(code: number): string {
 
 export function formatDay(dateStr: string, index: number): { day: string; date: string } {
   const d = new Date(dateStr + 'T12:00:00Z');
-  if (index === 0) return { day: 'Today', date: d.toLocaleDateString('en', { month: 'short', day: 'numeric' }) };
+
+  if (index === 0) {
+    return {day: 'Today', date: d.toLocaleDateString('en', {month: 'short', day: 'numeric'})};
+  }
+
   return {
     day: d.toLocaleDateString('en', { weekday: 'short' }),
     date: d.toLocaleDateString('en', { month: 'short', day: 'numeric' }),

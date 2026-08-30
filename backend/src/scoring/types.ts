@@ -6,7 +6,7 @@ export interface HourlySlice {
   cloudcover: number[];    // %
   snowfall: number[];      // cm
   visibility: number[];    // m
-  waveHeight: number[];    // m  (all zeros when no marine data)
+  waveHeight: number[];    // m (all zeros when no marine data)
   wavePeriod: number[];    // s
   hasMarine: boolean;
 }

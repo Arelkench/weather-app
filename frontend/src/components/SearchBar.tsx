@@ -10,15 +10,83 @@ interface Props {
   currentLocation: string | null;
 }
 
+const styles = {
+  form: { display: 'flex', gap: 8 },
+  inputWrapper: { position: 'relative' as const, flex: 1 },
+  searchIcon: {
+    position: 'absolute' as const, left: 12, top: '50%', transform: 'translateY(-50%)',
+    color: 'var(--text-muted)', fontSize: 15, pointerEvents: 'none' as const,
+  },
+  spinner: {
+    position: 'absolute' as const, right: 12, top: '50%', transform: 'translateY(-50%)',
+    color: 'var(--text-muted)', fontSize: 11,
+  },
+  submitButton: {
+    padding: '10px 20px',
+    background: 'var(--accent)',
+    color: '#FFF',
+    border: 'none',
+    borderRadius: 'var(--radius-sm)',
+    fontSize: 14,
+    fontWeight: 600 as const,
+    whiteSpace: 'nowrap' as const,
+    flexShrink: 0,
+  },
+  popoverContent: {
+    background: 'var(--bg-card)',
+    border: '1px solid var(--border)',
+    borderRadius: 'var(--radius-sm)',
+    boxShadow: 'var(--shadow-md)',
+    padding: '6px 0',
+    zIndex: 100,
+    minWidth: 260,
+  },
+  sectionLabel: {
+    padding: '4px 14px 6px',
+    fontSize: 11,
+    color: 'var(--text-muted)',
+    fontWeight: 600 as const,
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.06em',
+  },
+  divider: { border: 'none', borderTop: '1px solid var(--border)', margin: '4px 0' },
+  suggestionRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    width: '100%',
+    padding: '8px 14px',
+    border: 'none',
+    textAlign: 'left' as const,
+    fontSize: 14,
+    color: 'var(--text-primary)',
+    cursor: 'pointer',
+  },
+};
+
+function inputStyle(focused: boolean) {
+  return {
+    width: '100%',
+    padding: '10px 12px 10px 38px',
+    border: `1.5px solid ${focused ? 'var(--accent)' : 'var(--border)'}`,
+    borderRadius: 'var(--radius-sm)',
+    background: 'var(--bg)',
+    color: 'var(--text-primary)',
+    fontSize: 14,
+    outline: 'none',
+    transition: 'border-color 0.15s',
+  };
+}
+
 export function SearchBar({ onSearch, currentLocation }: Props) {
   const [input, setInput] = useState(currentLocation ?? '');
   const [open, setOpen] = useState(false);
+  const [focused, setFocused] = useState(false);
   const listId = useId();
   const queryClient = useQueryClient();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const debouncedInput = useDebounce(input, 300);
-
   const { data: suggestions = [], isFetching } = useLocationSuggestions(debouncedInput);
 
   const recent = queryClient
@@ -29,12 +97,14 @@ export function SearchBar({ onSearch, currentLocation }: Props) {
     .filter((loc): loc is string => Boolean(loc) && loc !== currentLocation)
     .slice(0, 4);
 
-  // User is actively typing a new query when input differs from the loaded location
-  // and has enough chars to warrant suggestions.
   const isTypingNewQuery = debouncedInput.trim().length >= 2 && debouncedInput !== currentLocation;
   const showRecent = recent.length > 0 && !isTypingNewQuery;
   const showSuggestions = isTypingNewQuery && suggestions.length > 0;
   const popoverOpen = open && (showRecent || showSuggestions);
+
+  useEffect(() => {
+    if (currentLocation) setInput(currentLocation);
+  }, [currentLocation]);
 
   function submit(loc: string) {
     const trimmed = loc.trim();
@@ -44,61 +114,51 @@ export function SearchBar({ onSearch, currentLocation }: Props) {
     onSearch(trimmed);
   }
 
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setInput(e.target.value);
+    setOpen(true);
+  }
+
+  function handleFocus() {
+    setFocused(true);
+    setOpen(true);
+  }
+
+  function handleBlur() {
+    setFocused(false);
+  }
+
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') submit(input);
     if (e.key === 'Escape') setOpen(false);
   }
 
-  useEffect(() => {
-    if (currentLocation) setInput(currentLocation);
-  }, [currentLocation]);
+  function handleFormSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    submit(input);
+  }
 
   return (
     <Popover.Root open={popoverOpen} onOpenChange={setOpen}>
       <Popover.Anchor asChild>
-        <form
-          role="search"
-          onSubmit={(e) => { e.preventDefault(); submit(input); }}
-          style={{ display: 'flex', gap: 8 }}
-        >
+        <form role="search" onSubmit={handleFormSubmit} style={styles.form}>
           <VisuallyHidden.Root>
             <label htmlFor="city-search">Search for a city or town</label>
           </VisuallyHidden.Root>
 
-          <div style={{ position: 'relative', flex: 1 }}>
-            <span
-              aria-hidden="true"
-              style={{
-                position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
-                color: 'var(--text-muted)', fontSize: 15, pointerEvents: 'none',
-              }}
-            >
-              🔍
-            </span>
+          <div style={styles.inputWrapper}>
+            <span aria-hidden="true" style={styles.searchIcon}>🔍</span>
             {isFetching && input.trim().length >= 2 && (
-              <span
-                aria-hidden="true"
-                style={{
-                  position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
-                  color: 'var(--text-muted)', fontSize: 11,
-                }}
-              >
-                …
-              </span>
+              <span aria-hidden="true" style={styles.spinner}>…</span>
             )}
             <input
               id="city-search"
               ref={inputRef}
               type="search"
               value={input}
-              onChange={(e) => { setInput(e.target.value); setOpen(true); }}
-              onFocus={(e) => {
-                setOpen(true);
-                (e.target as HTMLInputElement).style.borderColor = 'var(--accent)';
-              }}
-              onBlur={(e) => {
-                (e.target as HTMLInputElement).style.borderColor = 'var(--border)';
-              }}
+              onChange={handleChange}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
               onKeyDown={handleKeyDown}
               placeholder="Start typing to see suggestions…"
               autoComplete="off"
@@ -106,35 +166,11 @@ export function SearchBar({ onSearch, currentLocation }: Props) {
               aria-autocomplete="list"
               aria-controls={listId}
               aria-expanded={popoverOpen}
-              style={{
-                width: '100%',
-                padding: '10px 12px 10px 38px',
-                border: '1.5px solid var(--border)',
-                borderRadius: 'var(--radius-sm)',
-                background: 'var(--bg)',
-                color: 'var(--text-primary)',
-                fontSize: 14,
-                outline: 'none',
-                transition: 'border-color 0.15s',
-              }}
+              style={inputStyle(focused)}
             />
           </div>
 
-          <button
-            type="submit"
-            aria-label="Search"
-            style={{
-              padding: '10px 20px',
-              background: 'var(--accent)',
-              color: '#FFF',
-              border: 'none',
-              borderRadius: 'var(--radius-sm)',
-              fontSize: 14,
-              fontWeight: 600,
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-            }}
-          >
+          <button type="submit" aria-label="Search" style={styles.submitButton}>
             Search
           </button>
         </form>
@@ -148,62 +184,23 @@ export function SearchBar({ onSearch, currentLocation }: Props) {
           sideOffset={4}
           align="start"
           onOpenAutoFocus={(e) => e.preventDefault()}
-          style={{
-            width: 'var(--radix-popover-trigger-width)',
-            minWidth: 260,
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-sm)',
-            boxShadow: 'var(--shadow-md)',
-            padding: '6px 0',
-            zIndex: 100,
-          }}
+          style={{ width: 'var(--radix-popover-trigger-width)', ...styles.popoverContent }}
         >
-          {/* Recent searches */}
           {showRecent && (
             <>
-              <p style={{
-                padding: '4px 14px 6px',
-                fontSize: 11,
-                color: 'var(--text-muted)',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-              }}>
-                Recent
-              </p>
+              <p style={styles.sectionLabel}>Recent</p>
               {recent.map((loc) => (
-                <SuggestionRow
-                  key={loc}
-                  icon="🕐"
-                  label={loc}
-                  onClick={() => submit(loc)}
-                />
+                <SuggestionRow key={loc} icon="🕐" label={loc} onClick={() => submit(loc)} />
               ))}
             </>
           )}
 
-          {/* Live suggestions */}
           {showSuggestions && (
             <>
-              {showRecent && <hr style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '4px 0' }} />}
-              <p style={{
-                padding: '4px 14px 6px',
-                fontSize: 11,
-                color: 'var(--text-muted)',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-              }}>
-                Suggestions
-              </p>
+              {showRecent && <hr style={styles.divider} />}
+              <p style={styles.sectionLabel}>Suggestions</p>
               {suggestions.map((s) => (
-                <SuggestionRow
-                  key={s.display}
-                  icon="📍"
-                  label={s.display}
-                  onClick={() => submit(s.searchValue)}
-                />
+                <SuggestionRow key={s.display} icon="📍" label={s.display} onClick={() => submit(s.searchValue)} />
               ))}
             </>
           )}
@@ -214,26 +211,16 @@ export function SearchBar({ onSearch, currentLocation }: Props) {
 }
 
 function SuggestionRow({ icon, label, onClick }: { icon: string; label: string; onClick: () => void }) {
+  const [hovered, setHovered] = useState(false);
+
   return (
     <button
       role="option"
       aria-selected={false}
       onClick={onClick}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 10,
-        width: '100%',
-        padding: '8px 14px',
-        background: 'none',
-        border: 'none',
-        textAlign: 'left',
-        fontSize: 14,
-        color: 'var(--text-primary)',
-        cursor: 'pointer',
-      }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--bg-secondary)'; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'none'; }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{ ...styles.suggestionRow, background: hovered ? 'var(--bg-secondary)' : 'none' }}
     >
       <span aria-hidden="true" style={{ fontSize: 14 }}>{icon}</span>
       {label}
