@@ -29,8 +29,11 @@ export function SearchBar({ onSearch, currentLocation }: Props) {
     .filter((loc): loc is string => Boolean(loc) && loc !== currentLocation)
     .slice(0, 4);
 
-  const showRecent = recent.length > 0 && input.trim().length < 2;
-  const showSuggestions = suggestions.length > 0 && input.trim().length >= 2;
+  // User is actively typing a new query when input differs from the loaded location
+  // and has enough chars to warrant suggestions.
+  const isTypingNewQuery = debouncedInput.trim().length >= 2 && debouncedInput !== currentLocation;
+  const showRecent = recent.length > 0 && !isTypingNewQuery;
+  const showSuggestions = isTypingNewQuery && suggestions.length > 0;
   const popoverOpen = open && (showRecent || showSuggestions);
 
   function submit(loc: string) {

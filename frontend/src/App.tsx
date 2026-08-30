@@ -72,7 +72,6 @@ export default function App() {
         <ul style={{ listStyle: 'none', padding: '16px 12px', flex: 1 }} role="list">
           {[
             { label: 'Forecast', icon: '📈', active: true },
-            { label: 'Locations', icon: '📍', active: false },
             { label: 'About', icon: 'ℹ️', active: false },
           ].map(({ label, icon, active }) => (
             <li key={label}>
