@@ -109,6 +109,7 @@ export function Sidebar() {
             </button>
           ))}
         </div>
+
         <p style={styles.hint}>Scores show how suitable the weather is for each activity.</p>
       </div>
     </nav>
