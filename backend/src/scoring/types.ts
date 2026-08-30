@@ -1,13 +1,14 @@
 /** 24 hourly values for a single calendar day */
 export interface HourlySlice {
-  temperature: number[];   // °C
-  precipitation: number[]; // mm
-  windspeed: number[];     // km/h
-  cloudcover: number[];    // %
-  snowfall: number[];      // cm
-  visibility: number[];    // m
-  waveHeight: number[];    // m (all zeros when no marine data)
-  wavePeriod: number[];    // s
+  temperature: number[];          // °C  (raw air temp — used by skiing/surfing)
+  apparentTemperature: number[];  // °C  (perceived temp: air + humidity + wind + solar — used by sightseeing)
+  precipitation: number[];        // mm
+  windspeed: number[];            // km/h
+  cloudcover: number[];           // %
+  snowfall: number[];             // cm
+  visibility: number[];           // m
+  waveHeight: number[];           // m (all zeros when no marine data)
+  wavePeriod: number[];           // s
   hasMarine: boolean;
 }
 

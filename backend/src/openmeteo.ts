@@ -3,6 +3,7 @@ import type { HourlySlice } from './scoring/types';
 interface OpenMeteoHourly {
   time: string[];
   temperature_2m: number[];
+  apparent_temperature: number[];
   precipitation: number[];
   windspeed_10m: number[];
   cloudcover: number[];
@@ -29,7 +30,7 @@ async function fetchWeather(lat: number, lon: number): Promise<{ daily: unknown;
     latitude: String(lat),
     longitude: String(lon),
     daily: 'weathercode,temperature_2m_max,temperature_2m_min',
-    hourly: 'temperature_2m,precipitation,windspeed_10m,cloudcover,snowfall,visibility',
+    hourly: 'temperature_2m,apparent_temperature,precipitation,windspeed_10m,cloudcover,snowfall,visibility',
     timezone: 'auto',
     forecast_days: '7',
   });
@@ -86,6 +87,7 @@ export async function fetchForecastData(lat: number, lon: number): Promise<DayRa
     tempMin: Math.round(daily.temperature_2m_min[i]),
     hourly: {
       temperature: slice24(weather.hourly.temperature_2m, i),
+      apparentTemperature: slice24(weather.hourly.apparent_temperature, i),
       precipitation: slice24(weather.hourly.precipitation, i),
       windspeed: slice24(weather.hourly.windspeed_10m, i),
       cloudcover: slice24(weather.hourly.cloudcover, i),
