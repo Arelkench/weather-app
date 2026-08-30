@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import * as Tabs from '@radix-ui/react-tabs';
 import type { ActivityScore } from '../types';
 import { ScoreCircle } from './ScoreCircle';
@@ -12,6 +13,7 @@ interface Props {
 export function DetailPanel({ activity, onClose }: Props) {
   const color = activityColor(activity.activity);
   const isUnavailable = activity.score === 0 && activity.breakdown.length === 0;
+  const [activeTab, setActiveTab] = useState<'hour' | 'breakdown'>('hour');
 
   return (
     <aside
@@ -90,7 +92,7 @@ export function DetailPanel({ activity, onClose }: Props) {
 
       {/* Hourly chart (skip for unavailable activities) */}
       {!isUnavailable && (
-        <Tabs.Root defaultValue="hour">
+        <Tabs.Root value={activeTab} onValueChange={(v) => setActiveTab(v as 'hour' | 'breakdown')}>
           <Tabs.List
             aria-label="Chart view"
             style={{
@@ -101,26 +103,30 @@ export function DetailPanel({ activity, onClose }: Props) {
               marginBottom: 12,
             }}
           >
-            {['hour', 'breakdown'].map((tab) => (
-              <Tabs.Trigger
-                key={tab}
-                value={tab}
-                style={{
-                  flex: 1,
-                  padding: '5px 0',
-                  border: 'none',
-                  borderRadius: 6,
-                  fontSize: 12,
-                  fontWeight: 500,
-                  color: 'var(--text-secondary)',
-                  background: 'none',
-                  cursor: 'pointer',
-                }}
-                data-state="inactive"
-              >
-                {tab === 'hour' ? 'By hour' : 'Breakdown'}
-              </Tabs.Trigger>
-            ))}
+            {(['hour', 'breakdown'] as const).map((tab) => {
+              const isActive = activeTab === tab;
+              return (
+                <Tabs.Trigger
+                  key={tab}
+                  value={tab}
+                  style={{
+                    flex: 1,
+                    padding: '5px 0',
+                    border: 'none',
+                    borderRadius: 6,
+                    fontSize: 12,
+                    fontWeight: isActive ? 600 : 500,
+                    color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+                    background: isActive ? 'var(--bg-card)' : 'none',
+                    cursor: 'pointer',
+                    boxShadow: isActive ? '0 1px 3px rgba(0,0,0,0.12)' : 'none',
+                    transition: 'background 0.15s, color 0.15s',
+                  }}
+                >
+                  {tab === 'hour' ? 'By hour' : 'Breakdown'}
+                </Tabs.Trigger>
+              );
+            })}
           </Tabs.List>
 
           <Tabs.Content value="hour">
