@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import type { HourlySlice } from './types';
+import type { HourlySlice } from '../types';
 import {
   precipIndoorScore,
   thermalDiscomfortScore,
   windIndoorScore,
   cloudIndoorScore,
   scoreIndoor,
-} from './indoor';
+} from '.';
 
 function makeSlice(overrides: Partial<HourlySlice> = {}): HourlySlice {
   return {

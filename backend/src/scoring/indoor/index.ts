@@ -1,5 +1,5 @@
-import type { HourlySlice, ScorerOutput } from './types';
-import { lerp, weighted, toRating, bestWindow } from './types';
+import type { HourlySlice, ScorerOutput } from '../types';
+import { lerp, weighted, toRating, bestWindow } from '../types';
 
 /**
  * Indoor Sightseeing Motivation

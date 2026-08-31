@@ -1,5 +1,5 @@
-import type { HourlySlice, ScorerOutput } from './types';
-import { lerp, weighted, bestWindow } from './types';
+import type { HourlySlice, ScorerOutput } from '../types';
+import { lerp, weighted, bestWindow } from '../types';
 
 /**
  * Surfing suitability model

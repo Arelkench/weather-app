@@ -1,5 +1,5 @@
-import type { HourlySlice, ScorerOutput } from './types';
-import { weighted, bestWindow } from './types';
+import type { HourlySlice, ScorerOutput } from '../types';
+import { weighted, bestWindow } from '../types';
 
 /**
  * Skiing Utility Index (SUI)
