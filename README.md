@@ -117,9 +117,9 @@ cd backend && npm test
 
 39 boundary tests covering component functions and the evaluation-window constraint for both sightseeing models.
 
-## Things I'd do with more time
+## Things I left undone
 
-- Wind direction for surfing (offshore vs onshore matters more than speed)
-- Snow depth / base layer data for skiing (Open-Meteo has it in the climate API)
-- Location disambiguation — geocoding currently takes the first result; a dropdown to pick between multiple matches would help
-- Error boundary + retry UI
+- `weatherCode`, `type`, and `rating` in `DayForecast` and activity types would be better handled in the frontend rather than returned from the API
+- There are still inconsistencies in callbacks and types across the codebase
+- UX is not intuitive enough — it's not clear from the start which score is being shown by default
+- Duplicate description text in the full info block about an activity
