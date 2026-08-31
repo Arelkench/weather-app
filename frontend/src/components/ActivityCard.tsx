@@ -60,7 +60,7 @@ export function ActivityCard({ activity, isSelected, onSelect }: Props) {
       </div>
 
       <div style={styles.scoreRow}>
-        <ScoreCircle score={activity.score} size={72} strokeWidth={6} />
+        <ScoreCircle score={activity.score} size={72} strokeWidth={6} unavailable={activity.breakdown.length === 0} />
         <div>
           <p style={{ fontSize: 14, fontWeight: 700, color: scoreColor(activity.score) }}>{activity.rating}</p>
           <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2, lineHeight: 1.4 }}>

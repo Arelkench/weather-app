@@ -62,7 +62,20 @@ export function ForecastContent({ location, isLoading, error, data, selectedDay,
         <div style={styles.centered}>
           <p style={styles.bigIcon} aria-hidden="true">🌤</p>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Activity Forecast</h1>
-          <p style={{ fontSize: 15 }}>Search a city to see 7-day activity scores for surfing, skiing, and sightseeing.</p>
+          <p style={{ fontSize: 15, marginBottom: 28 }}>Search a city to see 7-day scores for four activities.</p>
+          <div style={{ display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap' as const }}>
+            {[
+              { icon: '🏄', label: 'Surfing' },
+              { icon: '⛷️', label: 'Skiing' },
+              { icon: '🚶', label: 'Outdoor' },
+              { icon: '🏛️', label: 'Indoor' },
+            ].map(({ icon, label }) => (
+              <div key={label} style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 32 }} aria-hidden="true">{icon}</span>
+                <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 500 }}>{label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

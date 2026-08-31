@@ -5,14 +5,15 @@ interface Props {
   size?: number;
   strokeWidth?: number;
   showLabel?: boolean;
+  unavailable?: boolean;
 }
 
-export function ScoreCircle({ score, size = 80, strokeWidth = 6, showLabel = true }: Props) {
+export function ScoreCircle({ score, size = 80, strokeWidth = 6, showLabel = true, unavailable = false }: Props) {
   const radius = (size - strokeWidth * 2) / 2;
   const cx = size / 2;
   const circumference = 2 * Math.PI * radius;
-  const filled = (score / 100) * circumference;
-  const color = scoreColor(score);
+  const filled = unavailable ? 0 : (score / 100) * circumference;
+  const color = unavailable ? 'var(--border)' : scoreColor(score);
 
   return (
     <svg
@@ -32,27 +33,29 @@ export function ScoreCircle({ score, size = 80, strokeWidth = 6, showLabel = tru
       />
 
       {/* progress */}
-      <circle
-        cx={cx} cy={cx} r={radius}
-        fill="none"
-        stroke={color}
-        strokeWidth={strokeWidth}
-        strokeLinecap="round"
-        strokeDasharray={`${filled} ${circumference - filled}`}
-        transform={`rotate(-90 ${cx} ${cx})`}
-        style={{ transition: 'stroke-dasharray 0.5s ease' }}
-      />
+      {!unavailable && (
+        <circle
+          cx={cx} cy={cx} r={radius}
+          fill="none"
+          stroke={color}
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeDasharray={`${filled} ${circumference - filled}`}
+          transform={`rotate(-90 ${cx} ${cx})`}
+          style={{ transition: 'stroke-dasharray 0.5s ease' }}
+        />
+      )}
 
       {showLabel && (
         <text
           x="50%" y="50%"
           textAnchor="middle"
           dominantBaseline="central"
-          fontSize={size * 0.26}
+          fontSize={unavailable ? size * 0.20 : size * 0.26}
           fontWeight="700"
-          fill="var(--text-primary)"
+          fill={unavailable ? 'var(--text-muted)' : 'var(--text-primary)'}
         >
-          {score}
+          {unavailable ? 'N/A' : score}
         </text>
       )}
     </svg>
