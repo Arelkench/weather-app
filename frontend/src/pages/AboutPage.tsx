@@ -107,12 +107,12 @@ export function AboutPage() {
         </p>
         <p style={styles.p}>
           <a
-            href="https://excalidraw.com/#json=htDSDHw5VmT0UnH1cT0AQ,PuwkGuSVCSNnpvmM1VCl1A"
+            href="https://excalidraw.com/#json=rEt0BLHOsLRmoUkpAVXhZ,Vu8jIZBAqxC_OYc1n6ni7A"
             target="_blank"
             rel="noreferrer"
             style={styles.link}
           >
-            https://excalidraw.com/#json=htDSDHw5VmT0UnH1cT0AQ,PuwkGuSVCSNnpvmM1VCl1A
+            https://excalidraw.com/#json=rEt0BLHOsLRmoUkpAVXhZ,Vu8jIZBAqxC_OYc1n6ni7A
           </a>
         </p>
 
