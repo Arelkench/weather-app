@@ -132,6 +132,8 @@ export function SearchBar({ onSearch, currentLocation }: Props) {
 
   function handleBlur() {
     setFocused(false);
+    // Delay so a click on a suggestion row registers before the popover closes.
+    setTimeout(() => setOpen(false), 150);
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -206,6 +208,7 @@ export function SearchBar({ onSearch, currentLocation }: Props) {
           sideOffset={4}
           align="start"
           onOpenAutoFocus={(e) => e.preventDefault()}
+          onInteractOutside={(e) => e.preventDefault()}
           style={{ width: 'var(--radix-popover-trigger-width)', ...styles.popoverContent }}
         >
           {showRecent && (
