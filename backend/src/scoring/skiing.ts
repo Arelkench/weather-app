@@ -35,6 +35,18 @@ const SKI_START_HOUR = 10;
 const SKI_END_HOUR = 15;
 
 /**
+ * Maximum apparent temperature during the ski window that still allows skiing
+ * when there is no snowfall at all.
+ *
+ * WHY 3°C:
+ * Above this threshold without any snowfall, snow-covered slopes are physically
+ * implausible (melting/icy/absent). The SUI research model assumes an existing
+ * ski-resort base layer, so we guard the entry point rather than letting the
+ * polynomial produce a high snowfall-utility score for a tropical beach.
+ */
+const MAX_VIABLE_TEMP_NO_SNOW_CELSIUS = 3;
+
+/**
  * Snowfall utility.
  *
  * WHY:
@@ -257,7 +269,7 @@ export function scoreSkiing(slice: HourlySlice): ScorerOutput {
   const peakSkiTemp = Math.max(...slice.temperature.slice(SKI_START_HOUR, SKI_END_HOUR));
   const anySnow = slice.snowfall.some((cm) => cm > 0);
 
-  if (peakSkiTemp > 3 && !anySnow) {
+  if (peakSkiTemp > MAX_VIABLE_TEMP_NO_SNOW_CELSIUS && !anySnow) {
     return {
       score: 0,
       rating: 'Extremely unfavorable',
