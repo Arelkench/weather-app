@@ -2,6 +2,22 @@
 
 A 7-day activity forecast service that scores how good each day will be for **surfing**, **skiing**, **outdoor sightseeing**, and **indoor sightseeing** for any city or town.
 
+## Screenshots
+
+**Welcome — search any city to start**
+
+![Welcome screen](docs/screenshots/welcome.png)
+
+**Forecast — 7-day strip, activity cards, and detail panel**
+
+The day strip shows each day's score for the selected activity. Clicking a card opens the detail panel with an hourly score chart, best 4-hour window, factor breakdown, and a plain-language explanation of the score. The skiing card shows N/A with an explanation when conditions are physically implausible (e.g. Sydney in summer — too warm, no snow).
+
+![Forecast for Sydney, Australia](docs/screenshots/forecast.png)
+
+**About — methodology and scoring evolution**
+
+![About page](docs/screenshots/about.png)
+
 ## How to run
 
 **Requirements:** Node 18+
