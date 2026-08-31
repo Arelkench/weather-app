@@ -5,6 +5,9 @@ import { SearchBar } from './components/SearchBar';
 import { Sidebar } from './components/Sidebar';
 import { ForecastContent } from './components/ForecastContent';
 import { DetailPanel } from './components/DetailPanel';
+import { AboutPage } from './pages/AboutPage';
+
+type Page = 'forecast' | 'about';
 
 const styles = {
   root: { display: 'flex', height: '100vh', overflow: 'hidden' },
@@ -26,6 +29,7 @@ function unitButtonStyle(active: boolean) {
 }
 
 export default function App() {
+  const [page, setPage] = useState<Page>('forecast');
   const [location, setLocation] = useState<string | null>(null);
   const { data, isLoading, error } = useForecast(location);
   const { selectedDay, setSelectedDay, selectedActivity, detailOpen, setDetailOpen, unit, setUnit, handleActivitySelect } = useForecastState(data);
@@ -34,7 +38,7 @@ export default function App() {
 
   return (
     <div style={styles.root}>
-      <Sidebar />
+      <Sidebar page={page} onNav={setPage} />
 
       <main id="main-content" style={styles.main}>
         <header style={styles.header}>
@@ -51,17 +55,19 @@ export default function App() {
           </div>
         </header>
 
-        <ForecastContent
-          location={location}
-          isLoading={isLoading}
-          error={error as Error | null}
-          data={data}
-          selectedDay={selectedDay}
-          selectedActivity={selectedActivity}
-          unit={unit}
-          onSelectDay={setSelectedDay}
-          onSelectActivity={handleActivitySelect}
-        />
+        {page === 'about' ? <AboutPage /> : (
+          <ForecastContent
+            location={location}
+            isLoading={isLoading}
+            error={error as Error | null}
+            data={data}
+            selectedDay={selectedDay}
+            selectedActivity={selectedActivity}
+            unit={unit}
+            onSelectDay={setSelectedDay}
+            onSelectActivity={handleActivitySelect}
+          />
+        )}
       </main>
 
       {detailOpen && activeActivity && (

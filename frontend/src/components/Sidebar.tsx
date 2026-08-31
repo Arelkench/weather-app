@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 
 const NAV_ITEMS = [
-  { label: 'Forecast', icon: '📈', active: true },
-  { label: 'About', icon: 'ℹ️', active: false },
+  { label: 'Forecast', icon: '📈' },
+  { label: 'About', icon: 'ℹ️' },
 ] as const;
 
 const THEME_BUTTONS = [
@@ -80,7 +80,16 @@ function useSystemTheme(): 'light' | 'dark' {
   return systemTheme;
 }
 
-export function Sidebar() {
+type Page = 'forecast' | 'about';
+
+interface SidebarProps {
+  page: Page;
+  onNav: (page: Page) => void;
+}
+
+const NAV_PAGE_MAP: Record<string, Page> = { Forecast: 'forecast', About: 'about' };
+
+export function Sidebar({ page, onNav }: SidebarProps) {
   const { theme, setTheme } = useTheme();
   const systemTheme = useSystemTheme();
   const effectiveTheme = theme === 'system' ? systemTheme : theme;
@@ -102,14 +111,22 @@ export function Sidebar() {
       </div>
 
       <ul style={styles.navList} role="list">
-        {NAV_ITEMS.map(({ label, icon, active }) => (
-          <li key={label}>
-            <button aria-current={active ? 'page' : undefined} style={navItemStyle(active)}>
-              <span aria-hidden="true">{icon}</span>
-              {label}
-            </button>
-          </li>
-        ))}
+        {NAV_ITEMS.map(({ label, icon }) => {
+          const target = NAV_PAGE_MAP[label];
+          const active = page === target;
+          return (
+            <li key={label}>
+              <button
+                aria-current={active ? 'page' : undefined}
+                onClick={() => onNav(target)}
+                style={navItemStyle(active)}
+              >
+                <span aria-hidden="true">{icon}</span>
+                {label}
+              </button>
+            </li>
+          );
+        })}
       </ul>
 
       <div style={styles.themeSection}>
