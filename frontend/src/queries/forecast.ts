@@ -14,7 +14,7 @@ export const FORECAST_QUERY = gql`
         tempMax
         tempMin
         activities {
-          activity
+          name
           score
           rating
           description
