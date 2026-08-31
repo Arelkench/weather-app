@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 
 const NAV_ITEMS = [
@@ -64,8 +65,25 @@ function themeButtonStyle(active: boolean) {
   };
 }
 
+function useSystemTheme(): 'light' | 'dark' {
+  const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>(
+    () => window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = (e: MediaQueryListEvent) => setSystemTheme(e.matches ? 'dark' : 'light');
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  return systemTheme;
+}
+
 export function Sidebar() {
   const { theme, setTheme } = useTheme();
+  const systemTheme = useSystemTheme();
+  const effectiveTheme = theme === 'system' ? systemTheme : theme;
 
   function handleThemeToggle(value: 'light' | 'dark') {
     setTheme(theme === value ? 'system' : value);
@@ -100,9 +118,9 @@ export function Sidebar() {
             <button
               key={value}
               aria-pressed={theme === value}
-              aria-label={`Switch to ${value} mode`}
+              aria-label={`Switch to ${label} mode${theme === 'system' && effectiveTheme === value ? ' (currently active via system)' : ''}`}
               onClick={() => handleThemeToggle(value)}
-              style={themeButtonStyle(theme === value)}
+              style={themeButtonStyle(effectiveTheme === value)}
             >
               <span aria-hidden="true">{icon}</span>
               {label}

@@ -21,6 +21,12 @@ const styles = {
     position: 'absolute' as const, right: 12, top: '50%', transform: 'translateY(-50%)',
     color: 'var(--text-muted)', fontSize: 11,
   },
+  clearButton: {
+    position: 'absolute' as const, right: 10, top: '50%', transform: 'translateY(-50%)',
+    background: 'none', border: 'none', padding: '2px 4px',
+    color: 'var(--text-muted)', fontSize: 14, cursor: 'pointer',
+    lineHeight: 1, borderRadius: 4,
+  },
   submitButton: {
     padding: '10px 20px',
     background: 'var(--accent)',
@@ -64,10 +70,10 @@ const styles = {
   },
 };
 
-function inputStyle(focused: boolean) {
+function inputStyle(focused: boolean, hasValue: boolean) {
   return {
     width: '100%',
-    padding: '10px 12px 10px 38px',
+    padding: `10px ${hasValue ? 34 : 12}px 10px 38px`,
     border: `1.5px solid ${focused ? 'var(--accent)' : 'var(--border)'}`,
     borderRadius: 'var(--radius-sm)',
     background: 'var(--bg)',
@@ -133,6 +139,12 @@ export function SearchBar({ onSearch, currentLocation }: Props) {
     if (e.key === 'Escape') setOpen(false);
   }
 
+  function handleClear() {
+    setInput('');
+    setOpen(false);
+    inputRef.current?.focus();
+  }
+
   function handleFormSubmit(e: React.FormEvent) {
     e.preventDefault();
     submit(input);
@@ -149,12 +161,12 @@ export function SearchBar({ onSearch, currentLocation }: Props) {
           <div style={styles.inputWrapper}>
             <span aria-hidden="true" style={styles.searchIcon}>🔍</span>
             {isFetching && input.trim().length >= 2 && (
-              <span aria-hidden="true" style={styles.spinner}>…</span>
+              <span aria-live="polite" aria-label="Loading suggestions" style={styles.spinner}>…</span>
             )}
             <input
               id="city-search"
               ref={inputRef}
-              type="search"
+              type="text"
               value={input}
               onChange={handleChange}
               onFocus={handleFocus}
@@ -166,8 +178,18 @@ export function SearchBar({ onSearch, currentLocation }: Props) {
               aria-autocomplete="list"
               aria-controls={listId}
               aria-expanded={popoverOpen}
-              style={inputStyle(focused)}
+              style={inputStyle(focused, input.length > 0)}
             />
+            {input.length > 0 && !isFetching && (
+              <button
+                type="button"
+                aria-label="Clear search"
+                onClick={handleClear}
+                style={styles.clearButton}
+              >
+                ×
+              </button>
+            )}
           </div>
 
           <button type="submit" aria-label="Search" style={styles.submitButton}>
