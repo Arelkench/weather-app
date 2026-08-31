@@ -15,11 +15,14 @@ export interface ForecastState {
 export function useForecastState(data: ForecastData | undefined): ForecastState {
   const [selectedDay, setSelectedDay] = useState(0);
   const [selectedActivity, setSelectedActivity] = useState<ActivityType>('surfing');
-  const [detailOpen, setDetailOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(true);
   const [unit, setUnit] = useState<TempUnit>('C');
 
   useEffect(() => {
-    if (data) setSelectedDay(0);
+    if (data) {
+      setSelectedDay(0);
+      setDetailOpen(true);
+    }
   }, [data]);
 
   function handleActivitySelect(activity: ActivityType) {
