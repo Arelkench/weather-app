@@ -330,9 +330,9 @@ export function scoreSurfing(
   if (!slice.hasMarine) {
     return {
       score: 0,
-      rating: 'Poor',
+      rating: 'Extremely unfavorable',
       description:
-          'No marine forecast is available — surfing conditions cannot be evaluated.',
+          'No marine forecast is available for this location — surfing conditions cannot be evaluated.',
       bestTime: 'N/A',
       breakdown: [],
       hourly: Array.from(
