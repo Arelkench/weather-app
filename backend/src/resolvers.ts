@@ -13,10 +13,10 @@ function buildActivities(hourly: HourlySlice) {
   const indoor = scoreIndoor(hourly);
 
   return [
-    { activity: 'surfing', ...surfing },
-    { activity: 'skiing', ...skiing },
-    { activity: 'outdoor', ...outdoor },
-    { activity: 'indoor', ...indoor },
+    { name: 'surfing', ...surfing },
+    { name: 'skiing', ...skiing },
+    { name: 'outdoor', ...outdoor },
+    { name: 'indoor', ...indoor },
   ];
 }
 

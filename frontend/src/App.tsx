@@ -30,7 +30,7 @@ export default function App() {
   const { data, isLoading, error } = useForecast(location);
   const { selectedDay, setSelectedDay, selectedActivity, detailOpen, setDetailOpen, unit, setUnit, handleActivitySelect } = useForecastState(data);
 
-  const activeActivity = data?.forecast?.days[selectedDay]?.activities.find((a) => a.activity === selectedActivity);
+  const activeActivity = data?.forecast?.days[selectedDay]?.activities.find((a) => a.name === selectedActivity);
 
   return (
     <div style={styles.root}>

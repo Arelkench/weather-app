@@ -1,9 +1,9 @@
-import type { ActivityScore, ActivityType } from '../types';
+import type { Activity, ActivityType } from '../types';
 import { ScoreCircle } from './ScoreCircle';
 import { activityColor, activityIcon, activityLabel, scoreColor } from '../utils/weather';
 
 interface Props {
-  activity: ActivityScore;
+  activity: Activity;
   isSelected: boolean;
   onSelect: (activity: ActivityType) => void;
 }
@@ -43,19 +43,19 @@ function barFillStyle(color: string, score: number) {
 }
 
 export function ActivityCard({ activity, isSelected, onSelect }: Props) {
-  const color = activityColor(activity.activity);
+  const color = activityColor(activity.name);
 
   return (
     <button
       aria-pressed={isSelected}
-      aria-label={`${activityLabel(activity.activity)}: score ${activity.score}, ${activity.rating}. ${activity.description}`}
-      onClick={() => onSelect(activity.activity)}
+      aria-label={`${activityLabel(activity.name)}: score ${activity.score}, ${activity.rating}. ${activity.description}`}
+      onClick={() => onSelect(activity.name)}
       style={cardStyle(isSelected, color)}
     >
       <div style={styles.header}>
-        <span style={{ fontSize: 22 }} aria-hidden="true">{activityIcon(activity.activity)}</span>
+        <span style={{ fontSize: 22 }} aria-hidden="true">{activityIcon(activity.name)}</span>
         <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-          {activityLabel(activity.activity)}
+          {activityLabel(activity.name)}
         </span>
       </div>
 

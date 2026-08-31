@@ -124,9 +124,9 @@ export function ForecastContent({ location, isLoading, error, data, selectedDay,
             <div style={styles.activityGrid}>
               {day.activities.map((activity) => (
                 <ActivityCard
-                  key={activity.activity}
+                  key={activity.name}
                   activity={activity}
-                  isSelected={activity.activity === selectedActivity}
+                  isSelected={activity.name === selectedActivity}
                   onSelect={onSelectActivity}
                 />
               ))}

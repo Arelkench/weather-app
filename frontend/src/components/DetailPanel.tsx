@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import * as Tabs from '@radix-ui/react-tabs';
-import type { ActivityScore } from '../types';
+import type { Activity } from '../types';
 import { ScoreCircle } from './ScoreCircle';
 import { HourlyChart } from './HourlyChart';
 import { activityColor, activityIcon, activityLabel, scoreColor } from '../utils/weather';
 
 interface Props {
-  activity: ActivityScore;
+  activity: Activity;
   onClose: () => void;
 }
 
@@ -77,7 +77,7 @@ function barFillStyle(color: string, score: number) {
 
 export function DetailPanel({ activity, onClose }: Props) {
   const [activeTab, setActiveTab] = useState<'hour' | 'breakdown'>('hour');
-  const color = activityColor(activity.activity);
+  const color = activityColor(activity.name);
   const isUnavailable = activity.score === 0 && activity.breakdown.length === 0;
 
   function handleTabChange(v: string) {
@@ -85,12 +85,12 @@ export function DetailPanel({ activity, onClose }: Props) {
   }
 
   return (
-    <aside aria-label={`${activityLabel(activity.activity)} detail`} style={styles.aside}>
+    <aside aria-label={`${activityLabel(activity.name)} detail`} style={styles.aside}>
       <div style={styles.header}>
         <div style={styles.titleRow}>
-          <span style={{ fontSize: 24 }} aria-hidden="true">{activityIcon(activity.activity)}</span>
+          <span style={{ fontSize: 24 }} aria-hidden="true">{activityIcon(activity.name)}</span>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
-            {activityLabel(activity.activity)}
+            {activityLabel(activity.name)}
           </h2>
         </div>
         <button onClick={onClose} aria-label="Close detail panel" style={styles.closeButton}>×</button>

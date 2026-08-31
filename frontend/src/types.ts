@@ -17,8 +17,8 @@ export interface HourlyScore {
   score: number;
 }
 
-export interface ActivityScore {
-  activity: ActivityType;
+export interface Activity {
+  name: ActivityType;
   score: number;
   rating: string;
   description: string;
@@ -32,7 +32,7 @@ export interface DayForecast {
   weatherCode: number;
   tempMax: number;
   tempMin: number;
-  activities: ActivityScore[];
+  activities: Activity[];
 }
 
 export interface ForecastData {

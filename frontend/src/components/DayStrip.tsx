@@ -42,7 +42,7 @@ export function DayStrip({ days, selectedDay, selectedActivity, unit, onSelectDa
     <div role="tablist" aria-label="7-day forecast" style={styles.list}>
       {days.map((day, i) => {
         const { day: dayName, date } = formatDay(day.date, i);
-        const activity = day.activities.find((a) => a.activity === selectedActivity);
+        const activity = day.activities.find((a) => a.name === selectedActivity);
         const score = activity?.score ?? 0;
         const isSelected = i === selectedDay;
 

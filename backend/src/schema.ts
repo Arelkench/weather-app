@@ -19,11 +19,11 @@ export const typeDefs = `#graphql
     weatherCode: Int!
     tempMax: Float!
     tempMin: Float!
-    activities: [ActivityScore!]!
+    activities: [Activity!]!
   }
 
-  type ActivityScore {
-    activity: String!
+  type Activity {
+    name: String!
     score: Int!
     rating: String!
     description: String!
