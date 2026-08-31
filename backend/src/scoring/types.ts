@@ -23,7 +23,7 @@ export interface ScorerOutput {
   description: string;
   bestTime: string;
   breakdown: ScoreFactor[];
-  hourly: Array<{ hour: number; score: number }>;
+  hourly: { hour: number; score: number }[];
 }
 
 export function toRating(score: number): string {
@@ -41,7 +41,7 @@ export function lerp(val: number, inMin: number, inMax: number, outMin: number, 
 }
 
 /** Weighted average of [value, weight] pairs — weights need not sum to 1 */
-export function weighted(factors: Array<[number, number]>): number {
+export function weighted(factors: [number, number][]): number {
   const totalWeight = factors.reduce((s, [, w]) => s + w, 0);
   const sum = factors.reduce((s, [v, w]) => s + v * w, 0);
   return Math.round(sum / totalWeight);

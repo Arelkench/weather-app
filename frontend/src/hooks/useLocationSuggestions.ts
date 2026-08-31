@@ -18,7 +18,7 @@ export function useLocationSuggestions(query: string) {
       }
 
       const data = (await res.json()) as {
-        results?: Array<{ name: string; country: string; admin1?: string; country_code?: string }>;
+        results?: { name: string; country: string; admin1?: string; country_code?: string }[];
       };
 
       if (!data.results) {

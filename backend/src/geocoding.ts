@@ -11,7 +11,7 @@ export async function geocodeLocation(query: string): Promise<GeoLocation> {
   if (!res.ok) throw new Error('Geocoding service unavailable');
 
   const data = (await res.json()) as {
-    results?: Array<{ name: string; country: string; latitude: number; longitude: number }>;
+    results?: { name: string; country: string; latitude: number; longitude: number }[];
   };
 
   if (!data.results || data.results.length === 0) {
